@@ -54,19 +54,19 @@
       "word": "गरम",
       "meaning": "hot",
       "context": "मुझे गरम कॉफी का मग चाहिए",
-      "strength": 0.5
+      "strength": 0.6
     },
     {
       "word": "कॉफी",
       "meaning": "coffee",
       "context": "मुझे गरम कॉफी का मग चाहिए",
-      "strength": 0.5
+      "strength": 0.6
     },
     {
       "word": "मग",
       "meaning": "mug",
       "context": "मुझे गरम कॉफी का मग चाहिए",
-      "strength": 0.5
+      "strength": 0.6
     }
   ],
   "scene_used": [

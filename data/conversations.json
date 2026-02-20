@@ -172,5 +172,64 @@
       "xp": 80,
       "level": 1
     }
+  },
+  {
+    "id": "conv_1771621026185",
+    "timestamp": "2026-02-20T20:57:06.185Z",
+    "scene_id": "scene_1",
+    "user_input": "मुझे गरम कॉफी का मग चाहिए",
+    "tasks": [
+      {
+        "task_id": "order_coffee",
+        "expected_intent": "order a hot coffee mug",
+        "keywords": [
+          "गरम",
+          "कॉफी",
+          "मग"
+        ]
+      }
+    ],
+    "evaluation": {
+      "scene_id": "scene_1",
+      "input_text": "मुझे गरम कॉफी का मग चाहिए",
+      "tasks": [
+        {
+          "task_id": "order_coffee",
+          "score": 100,
+          "completed": true,
+          "feedback": "Perfect! The player clearly asked for a hot coffee mug using all the required keywords."
+        }
+      ],
+      "npc_response": {
+        "text": "जरूर! आपके लिए गरम कॉफी का मग। थोड़ा सा इंतजार करें।",
+        "translation": "Of course! A hot coffee mug for you. Just a moment.",
+        "emotion": "happy"
+      },
+      "hint": null,
+      "xp_gained": 10,
+      "words_to_add": [
+        {
+          "word": "गरम",
+          "meaning": "hot",
+          "context_sentence": "मुझे गरम कॉफी का मग चाहिए"
+        },
+        {
+          "word": "कॉफी",
+          "meaning": "coffee",
+          "context_sentence": "मुझे गरम कॉफी का मग चाहिए"
+        },
+        {
+          "word": "मग",
+          "meaning": "mug",
+          "context_sentence": "मुझे गरम कॉफी का मग चाहिए"
+        }
+      ]
+    },
+    "xp_gained": 20,
+    "memory_after": {
+      "xp": 100,
+      "level": 2,
+      "difficulty": "beginner"
+    }
   }
 ]

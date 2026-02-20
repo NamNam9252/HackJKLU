@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { readJSON, writeJSON, DEFAULTS } from '@/lib/fileUtils';
-import OpenAI from 'openai';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import path from 'path';
+import fs from 'fs';
+
+const execAsync = promisify(exec);
 
 // ─── NVIDIA client ────────────────────────────────────────────────────────────
-const client = new OpenAI({
-  baseURL: 'https://integrate.api.nvidia.com/v1',
-  apiKey: process.env.NVIDIA_API_KEY || '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',
-});
-
 // ─── Level XP Thresholds ─────────────────────────────────────────────────────
 // Each level requires progressively more XP to reach the next one.
 const LEVEL_THRESHOLDS = [
@@ -296,14 +296,47 @@ Evaluate the user input, respond in character as the NPC, and return ONLY the JS
   const elapsed = Date.now() - startTime;
   console.log(`[process] Done in ${elapsed}ms. XP +${xpGained}. Total XP: ${memory.xp}. Level: ${memory.level}`);
 
-  // 10. Return full result
+  // 10. Execute Piper local TTS for NPC response ──────────────────────────────
+  let audioBase64 = null;
+  if (llmResult.npc_response && llmResult.npc_response.text) {
+    try {
+      const npcText = llmResult.npc_response.text;
+      const piperDir = path.join(process.cwd(), 'piper');
+      const textFile = path.join(piperDir, 'temp_input.txt');
+      const outputFile = path.join(piperDir, 'output.wav');
+
+      // Write text to a file so Windows CMD doesn't mangle quotes
+      await fs.promises.writeFile(textFile, npcText, 'utf8');
+
+      console.log(`[process] Running Piper TTS for NPC response: "${npcText}"`);
+      await execAsync(`piper.exe --model models/hi_IN-priyamvada-medium.onnx --output_file output.wav < temp_input.txt`, {
+        cwd: piperDir
+      });
+
+      const audioBuffer = await fs.promises.readFile(outputFile);
+      audioBase64 = audioBuffer.toString('base64');
+
+      // Cleanup
+      await fs.promises.unlink(textFile).catch(() => {});
+      await fs.promises.unlink(outputFile).catch(() => {});
+
+      console.log(`[process] Successfully generated NPC audio (${audioBase64.length} chars)`);
+    } catch (err) {
+      console.error('[process] Failed to run Piper TTS for NPC:', err.message);
+    }
+  }
+
+  // 11. Return full result
   return NextResponse.json({
     success: true,
     scene_id,
     user_input,
 
     // NPC response for the frontend to display/speak
-    npc_response: llmResult.npc_response || null,
+    npc_response: {
+      ...(llmResult.npc_response || {}),
+      audio_base64: audioBase64
+    },
 
     // Hint if the player needs help
     hint: llmResult.hint || null,

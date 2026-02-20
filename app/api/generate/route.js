@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import { readJSON, writeJSON, DEFAULTS } from '@/lib/fileUtils';
 import OpenAI from 'openai';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import path from 'path';
+import fs from 'fs';
+
+const execAsync = promisify(exec);
 
 // ─── NVIDIA / DeepSeek client ─────────────────────────────────────────────────
 const client = new OpenAI({
@@ -135,11 +141,43 @@ export async function POST(request) {
       writeJSON('words.json', updatedWords);
     }
     
+    // ─── Execute Piper local TTS ──────────────────────────────────────────────
+    let audioBase64 = null;
+    try {
+      const sentence = generatedData.sentence;
+      const piperDir = path.join(process.cwd(), 'piper');
+      const textFile = path.join(piperDir, 'temp_input.txt');
+      const outputFile = path.join(piperDir, 'output.wav');
+
+      // Write sentence to file to avoid cmd.exe escaping issues with echo
+      await fs.promises.writeFile(textFile, sentence, 'utf8');
+
+      console.log(`[generate] Running Piper TTS for sentence: "${sentence}"`);
+      // Run piper CLI
+      await execAsync(`piper.exe --model models/hi_IN-priyamvada-medium.onnx --output_file output.wav < temp_input.txt`, {
+        cwd: piperDir
+      });
+
+      // Read audio output back
+      const audioBuffer = await fs.promises.readFile(outputFile);
+      audioBase64 = audioBuffer.toString('base64');
+
+      // Cleanup temp files
+      await fs.promises.unlink(textFile).catch(() => {});
+      await fs.promises.unlink(outputFile).catch(() => {});
+      
+      console.log(`[generate] Successfully generated TTS audio (${audioBase64.length} chars base64)`);
+    } catch (piperErr) {
+      console.error('[generate] Failed to run local Piper TTS:', piperErr);
+      // We will still send the text response even if TTS fails
+    }
+
     const elapsed = Date.now() - startTime;
     
     return NextResponse.json({
       success: true,
       ...generatedData,
+      audio_base64: audioBase64,
       elapsed_ms: elapsed
     });
   } catch (error) {

@@ -31,6 +31,22 @@
     {
       "word": "ਕਾਫੀ",
       "meaning": "coffee"
+    },
+    {
+      "word": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ",
+      "meaning": "Hello (traditional Sikh greeting)"
+    },
+    {
+      "word": "ਤੁਸੀਂ",
+      "meaning": "you (formal)"
+    },
+    {
+      "word": "ਕਿਵੇਂ",
+      "meaning": "how"
+    },
+    {
+      "word": "ਹੋ",
+      "meaning": "are"
     }
   ],
   "user_used": [
@@ -77,6 +93,26 @@
     {
       "word": "ਕਾਫੀ",
       "meaning": "coffee",
+      "strength": 0
+    },
+    {
+      "word": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ",
+      "meaning": "Hello (traditional Sikh greeting)",
+      "strength": 0
+    },
+    {
+      "word": "ਤੁਸੀਂ",
+      "meaning": "you (formal)",
+      "strength": 0
+    },
+    {
+      "word": "ਕਿਵੇਂ",
+      "meaning": "how",
+      "strength": 0
+    },
+    {
+      "word": "ਹੋ",
+      "meaning": "are",
       "strength": 0
     }
   ]

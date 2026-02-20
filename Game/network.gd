@@ -10,6 +10,7 @@ var url := "ws://127.0.0.1:8080"
 var _was_open := false
 
 # keeps history of network activity
+@warning_ignore("shadowed_global_identifier")
 var log: Array[String] = []
 
 
